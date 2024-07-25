@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<form class="aa">
+    제목 : <input type="text"> <br>
+    내용 : <input type="text"> <br>
+    작성자 : <input type="text"> <br>
+    <br>
+    파일 : <input type="file" name="uploadFiles" multiple> <button type="button" class="uploadBtn">업로드</button> <br>
+
+    <button>전송</button>
+</form>
+
+<div class="uploadResult"></div>
+
+<script>
+    $(".uploadBtn").on("click", function () {
+        let formData = new FormData();
+
+        let inputFile = $("input[type='file']");
+        console.log(inputFile)
+
+        let files = inputFile[0].files;
+
+        for ( let i = 0; i < files.length; i++) {
+            formData.append("uploadFiles", files[i]);
+        }
+
+        console.log(formData.get("uploadFiles"))
+
+        //upload ajax
+        $.ajax({
+            url : '/uploadAjax',
+            processData : false,
+            contentType : false,
+            data : formData,
+            type : 'post',
+            dataType : 'json',
+            success : function (result) {
+                console.log(result)
+                showUploadImages(result)
+            },
+            error : function (jqXHR, textStatus, errorThrown){
+                console.log(textStatus);
+            }
+        })
+
+    })
+
+    function showUploadImages(arr){
+        console.log(arr)
+
+        let divArrea = $(".uploadResult");
+
+        for (let i = 0; i < arr.length; i++) {
+            console.log(arr[i].imageURL)
+            divArrea.append("<img src='/display?fileName=" + arr[i].imageURL + "'>");
+            divArrea.append("<img src='/display?fileName=" + arr[i].thumURL + "'>");
+            divArrea.append("<button data-num='1'>삭제</button>");
+            $(".aa").append("<input name='iurl' value='" + arr[i].imageURL + "'>")
+        }
+    }
+
+</script>
+
+
+
+</body>
+</html>
